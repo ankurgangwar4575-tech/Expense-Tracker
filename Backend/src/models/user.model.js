@@ -37,15 +37,18 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
     },
+    isGoogleUser: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-const userModel = mongoose.model("User", userSchema);
-
 // for saving hashed password in DB
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
+  if (this.isGoogleUser) return;
   this.password = await bcrypt.hash(this.password, 10);
   return;
 });
@@ -80,5 +83,7 @@ userSchema.methods.generateRefreshToken = function () {
     }
   );
 };
+
+const userModel = mongoose.model("User", userSchema);
 
 module.exports = userModel;

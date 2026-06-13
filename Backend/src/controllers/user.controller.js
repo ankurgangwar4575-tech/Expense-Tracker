@@ -14,6 +14,7 @@ const registerUser = AsyncHandler(async (req, res) => {
   if (
     [fullName, userName, email, password].some((field) => {
       field?.trim() === "";
+      return;
     })
   ) {
     throw new ApiError(400, "Reminder!!: All credentials are required!!");
@@ -48,7 +49,9 @@ const registerUser = AsyncHandler(async (req, res) => {
     profilePhoto: profilePhotoUrl,
   });
 
-  const foundUser = await userModel.findById(user._id);
+  const foundUser = await userModel
+    .findById(user._id)
+    .select("-password -refreshToken");
   if (!foundUser) {
     throw new ApiError(
       500,
@@ -61,7 +64,17 @@ const registerUser = AsyncHandler(async (req, res) => {
       new ApiResponse(200, foundUser, "User registered successfully in DB!!")
     );
 });
-const loginUser = AsyncHandler(async (req, res) => {});
+
+const loginUser = AsyncHandler(async (req, res) => {
+  //  take data
+  // check for data
+  // check for password
+  // find user in DB
+  // refreshtoken ,accesstoken
+  // send in cookies
+  const { userName, email, password } = req.body;
+});
+
 const logoutUser = AsyncHandler(async (req, res) => {});
 
 module.exports = { registerUser, loginUser, logoutUser };

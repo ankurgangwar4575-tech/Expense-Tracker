@@ -1,7 +1,19 @@
 const app = require("./src/app.js");
 const connectDB = require("./src/db/db.js");
 const PORT = process.env.PORT || 3000;
+const passport = require("./src/utils/passport.js");
+const session = require("express-session");
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 connectDB()
   .then((result) => {
     app.listen(PORT, (req, res) => {
@@ -9,5 +21,5 @@ connectDB()
     });
   })
   .catch((error) => {
-    console.log("MongoDB Connection error: ", error.message);
+    console.log("Reminder!! MongoDB Connection error!!: ", error.message);
   });
