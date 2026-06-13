@@ -65,6 +65,7 @@ const registerUser = AsyncHandler(async (req, res) => {
     );
 });
 
+
 const loginUser = AsyncHandler(async (req, res) => {
   //  take data
   // check for data
