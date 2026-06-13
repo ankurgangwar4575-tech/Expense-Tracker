@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       index: true,
       trim: true,
-      lower,
+      lowercase: true,
     },
     email: {
       type: String,
@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     profilePhoto: {
       type: String,
+      required: true,
     },
     refreshToken: {
       type: String,
@@ -46,6 +47,7 @@ const userModel = mongoose.model("User", userSchema);
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
+  return;
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
