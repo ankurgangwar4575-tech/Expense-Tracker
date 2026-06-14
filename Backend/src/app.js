@@ -3,7 +3,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const userRouter=require("../src/routes/user.routes.js");
+const userRouter = require("../src/routes/user.routes.js");
+const expenseRouter = require("../src/routes/expense.routes.js");
 
 app.use(
   cors({
@@ -25,8 +26,10 @@ app.use(
 app.use(express.static("public"));
 app.use(cookieParser());
 
+//user routes
+app.use("/api/users", userRouter);
 
-// routes
-app.use("/api/users",userRouter);
+// expense routes
+app.use("/api/expenses", expenseRouter);
 
 module.exports = app;

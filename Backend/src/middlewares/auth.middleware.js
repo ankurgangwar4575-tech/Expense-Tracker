@@ -9,7 +9,7 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
-      throw new ApiError(401, "Reminder!!: Unauthorized Request");
+      throw new ApiError(401, "Reminder!!: Unauthorized Request,Please login");
     }
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     if (!decoded) {

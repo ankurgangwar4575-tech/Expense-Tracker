@@ -48,11 +48,11 @@ userRouter.route("/refresh-token").post(refreshAccesToken);
 
 userRouter
   .route("/update-profile-photo")
-  .post(verifyJWT, upload.single("profilePhoto"), updateProfilePhoto);
+  .patch(verifyJWT, upload.single("profilePhoto"), updateProfilePhoto);
 
 userRouter.route("/get-user-info").get(verifyJWT, getUserInfo);
 
-userRouter.route("/update-user-info").post(verifyJWT, updateUserInfo);
+userRouter.route("/update-user-info").patch(verifyJWT, updateUserInfo);
 
-userRouter.route("/update-password").post(verifyJWT, updatePassword);
+userRouter.route("/update-password").patch(verifyJWT, updatePassword);
 module.exports = userRouter;
