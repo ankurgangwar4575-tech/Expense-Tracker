@@ -7,6 +7,10 @@ const {
   logoutUser,
   googleAuthCallback,
   refreshAccesToken,
+  updateProfilePhoto,
+  getUserInfo,
+  updateUserInfo,
+  updatePassword,
 } = require("../controllers/user.controller");
 const upload = require("../middlewares/multer.middleware.js");
 const userModel = require("../models/user.model.js");
@@ -42,4 +46,13 @@ userRouter.route("/sign-out").get(verifyJWT, logoutUser);
 
 userRouter.route("/refresh-token").post(refreshAccesToken);
 
+userRouter
+  .route("/update-profile-photo")
+  .post(verifyJWT, upload.single("profilePhoto"), updateProfilePhoto);
+
+userRouter.route("/get-user-info").get(verifyJWT, getUserInfo);
+
+userRouter.route("/update-user-info").post(verifyJWT, updateUserInfo);
+
+userRouter.route("/update-password").post(verifyJWT, updatePassword);
 module.exports = userRouter;

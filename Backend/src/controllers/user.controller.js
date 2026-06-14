@@ -225,9 +225,90 @@ const refreshAccesToken = AsyncHandler(async (req, res) => {
 });
 
 const updateProfilePhoto = AsyncHandler(async (req, res) => {
-  
+  const profilePhotoLocalPath = req.file?.path;
+  if (!profilePhotoLocalPath) {
+    throw new ApiError(400, "Reminder!!: Profile Photo path is missing");
+  }
+  const user = await userModel
+    .findById(req.user?._id)
+    .select("-password -refreshToken");
+  if (!user) {
+    throw new ApiError(400, "Reminder!! User not found, please login");
+  }
+  const oldUrl = user.profilePhoto;
+  const newProfilePhotoUrl = await uploadOnCloudinary(profilePhotoLocalPath);
+  if (!newProfilePhotoUrl) {
+    throw new ApiError(
+      500,
+      "Reminder!!: Error occurred while updating profile photo!!"
+    );
+  }
+  user.profilePhoto = newProfilePhotoUrl;
+  await user.save({ validateBeforeSave: false });
+  await deleteFromCloudinary(oldUrl);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile photo updated successfully"));
 });
 
+const getUserInfo = AsyncHandler(async (req, res) => {
+  const getUser = req.user;
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, getUser, "User information fetched successfully")
+    );
+});
+
+const updatePassword = AsyncHandler(async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    throw new ApiError(400, "Reminder!!: Password required!!");
+  }
+  if (newPassword !== confirmPassword) {
+    throw new ApiError(
+      400,
+      "Reminder!!: New passsword and confirm password mismatch"
+    );
+  }
+  const user = await userModel.findById(req.user?._id);
+
+  const checkOldPassword = await user.isPasswordCorrect(oldPassword);
+  if (!checkOldPassword) {
+    throw new ApiError(400, "Reminder!!: Invalid old password!!");
+  }
+  user.password = newPassword;
+  user.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json(new ApiError(200, {}, "Password updated successfully!!"));
+});
+const updateUserInfo = AsyncHandler(async (req, res) => {
+  const { fullName, userName, email } = req.body;
+  if (!fullName && !userName && !email) {
+    throw new ApiError(400, "Reminder!!: Credentials required for update");
+  }
+  const user = await userModel
+    .findByIdAndUpdate(
+      req?.user._id,
+      {
+        $set: {
+          fullName: fullName,
+          userName: userName,
+          email: email,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+    .select("-password -refreshToken");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User details updated successfully!!"));
+});
 module.exports = {
   registerUser,
   loginUser,
@@ -235,4 +316,7 @@ module.exports = {
   googleAuthCallback,
   refreshAccesToken,
   updateProfilePhoto,
+  getUserInfo,
+  updateUserInfo,
+  updatePassword,
 };
