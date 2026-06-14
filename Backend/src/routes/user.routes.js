@@ -5,10 +5,13 @@ const {
   registerUser,
   loginUser,
   logoutUser,
+  googleAuthCallback,
+  refreshAccesToken,
 } = require("../controllers/user.controller");
 const upload = require("../middlewares/multer.middleware.js");
 const userModel = require("../models/user.model.js");
-const ApiRespone = require("../utils/ApiResponse.js");
+const ApiResponse = require("../utils/ApiResponse.js");
+const verifyJWT = require("../middlewares/auth.middleware.js");
 
 userRouter.get(
   "/auth/google",
@@ -20,27 +23,7 @@ userRouter.get(
 userRouter.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }),
-  async (req, res) => {
-    const user = await userModel.findById(req.user?._id);
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
-
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-
-    const options = {
-      httpOnly: true,
-      secure: true,
-    };
-    res.cookie("refreshToken", refreshToken, options);
-
-    // res.redirect(
-    //   `${process.env.FRONTEND_URL}/login/success?token=${accessToken}`
-    // );
-    res
-      .status(200)
-      .json(new ApiRespone(200, user, "Google login is successfull!!"));
-  }
+  googleAuthCallback
 );
 
 userRouter.route("/sign-up").post(
@@ -52,7 +35,11 @@ userRouter.route("/sign-up").post(
   ]),
   registerUser
 );
+
 userRouter.route("/sign-in").post(loginUser);
-userRouter.route("/sign-out").get(logoutUser);
+
+userRouter.route("/sign-out").get(verifyJWT, logoutUser);
+
+userRouter.route("/refresh-token").post(refreshAccesToken);
 
 module.exports = userRouter;

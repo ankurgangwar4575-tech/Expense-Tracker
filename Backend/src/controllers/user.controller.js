@@ -6,8 +6,7 @@ const {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } = require("../utils/Cloudinary.js");
-// login user(sign-in)
-// logoutuser(sign-out)
+const jwt = require("jsonwebtoken");
 
 const registerUser = AsyncHandler(async (req, res) => {
   const { fullName, userName, email, password } = req.body;
@@ -65,17 +64,175 @@ const registerUser = AsyncHandler(async (req, res) => {
     );
 });
 
+const googleAuthCallback = AsyncHandler(async (req, res) => {
+  const user = await userModel.findById(req.user?._id);
+  if (!user) {
+    throw new ApiError(400, "Reminder!!: User not found!!");
+  }
+  const accessToken = user.generateAccessToken();
+  const refreshToken = user.generateRefreshToken();
 
-const loginUser = AsyncHandler(async (req, res) => {
-  //  take data
-  // check for data
-  // check for password
-  // find user in DB
-  // refreshtoken ,accesstoken
-  // send in cookies
-  const { userName, email, password } = req.body;
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+  const loggedInUser = await userModel
+    .findById(user._id)
+    .select("-password -refreshToken");
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  // res.redirect(
+  //   `${process.env.FRONTEND_URL}/login/success?token=${accessToken}`
+  // );
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { loggedInUser, accessToken, refreshToken },
+        "Google login is successfull!!"
+      )
+    );
 });
 
-const logoutUser = AsyncHandler(async (req, res) => {});
+const loginUser = AsyncHandler(async (req, res) => {
+  const { userName, email, password } = req.body;
+  if (!userName && !email) {
+    throw new ApiError(
+      400,
+      "Reminder!!: Either username or email is required for logging in!!"
+    );
+  }
 
-module.exports = { registerUser, loginUser, logoutUser };
+  const findUser = await userModel.findOne({
+    $or: [{ userName }, { email }],
+  });
+  if (!findUser) {
+    throw new ApiError(
+      400,
+      "Reminder!!: User with given credentials does not exists!!"
+    );
+  }
+  const isPasswordCorrect = await findUser.isPasswordCorrect(password);
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Reminder!!: Password entered is not valid!!");
+  }
+  const accessToken = findUser.generateAccessToken();
+  const refreshToken = findUser.generateRefreshToken();
+
+  findUser.refreshToken = refreshToken;
+  await findUser.save({ validateBeforeSave: false });
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  const loggedInUser = await userModel
+    .findById(findUser._id)
+    .select("-password -refreshToken");
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken)
+    .cookie("refreshToken", refreshToken)
+    .json(
+      new ApiResponse(
+        200,
+        { loggedInUser, accessToken, refreshToken },
+        "Logged In successfully!!"
+      )
+    );
+});
+
+const logoutUser = AsyncHandler(async (req, res) => {
+  await userModel.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: { refreshToken: null },
+    },
+    {
+      new: true,
+    }
+  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "Logged Out successfully!!"));
+});
+
+const refreshAccesToken = AsyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(
+      401,
+      "Reminder!!: Session expired, please login again to continue!!"
+    );
+  }
+  try {
+    const decodedRefreshToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+    if (!decodedRefreshToken) {
+      throw new ApiError(
+        401,
+        "Reminder!!: RefreshToken is invalid, Please login again to continue!!"
+      );
+    }
+    const findUser = await userModel.findById(decodedRefreshToken._id);
+    if (!findUser) {
+      throw new ApiError(
+        401,
+        "Reminder!!: RefreshToken is invalid, Please login again to continue!!"
+      );
+    }
+    if (findUser.refreshToken !== incomingRefreshToken) {
+      throw new ApiError(
+        401,
+        "Reminder!!: RefreshToken is invalid, Please login again to continue!!"
+      );
+    }
+    const newAccessToken = findUser.generateAccessToken();
+    const newRefreshToken = findUser.generateRefreshToken();
+
+    const options = { httpOnly: true, secure: true };
+    return res
+      .status(200)
+      .cookie("accessToken", newAccessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken: newAccessToken, refreshToken: newRefreshToken },
+          "Access Token renewed successfully!!"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(
+      500,
+      error.message ||
+        "Reminder!!: Error occurred while refreshing access token!!"
+    );
+  }
+});
+
+const updateProfilePhoto = AsyncHandler(async (req, res) => {
+  
+});
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  googleAuthCallback,
+  refreshAccesToken,
+  updateProfilePhoto,
+};
