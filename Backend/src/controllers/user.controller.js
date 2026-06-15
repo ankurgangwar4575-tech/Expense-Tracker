@@ -11,10 +11,7 @@ const jwt = require("jsonwebtoken");
 const registerUser = AsyncHandler(async (req, res) => {
   const { fullName, userName, email, password } = req.body;
   if (
-    [fullName, userName, email, password].some((field) => {
-      field?.trim() === "";
-      return;
-    })
+    [fullName, userName, email, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "Reminder!!: All credentials are required!!");
   }
@@ -82,33 +79,19 @@ const googleAuthCallback = AsyncHandler(async (req, res) => {
     secure: true,
   };
 
-  // res.redirect(
-  //   `${process.env.FRONTEND_URL}/login/success?token=${accessToken}`
-  // );
-  res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { loggedInUser, accessToken, refreshToken },
-        "Google login is successfull!!"
-      )
-    );
+  res.redirect(
+    `${process.env.FRONTEND_URL}/login/success?token=${accessToken}`
+  );
 });
 
 const loginUser = AsyncHandler(async (req, res) => {
-  const { userName, email, password } = req.body;
-  if (!userName && !email) {
-    throw new ApiError(
-      400,
-      "Reminder!!: Either username or email is required for logging in!!"
-    );
+  const { email, password } = req.body;
+  if (!email) {
+    throw new ApiError(400, "Reminder!!: Email is required for logging in!!");
   }
 
   const findUser = await userModel.findOne({
-    $or: [{ userName }, { email }],
+    $or: [{ email }],
   });
   if (!findUser) {
     throw new ApiError(

@@ -12,7 +12,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [preview, setPreview] = useState(null);
-
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -36,7 +36,10 @@ const SignUp = () => {
       formData.append("profilePhoto", profilePhoto);
 
       const response = await axiosInstance.post("/users/sign-up", formData);
-      navigate("/sign-in");
+      setSuccess(response.data.message);
+      setTimeout(() => {
+        navigate("/sign-in");
+      }, 1500);
     } catch (error) {
       setError(error.response?.data?.message || "Something went wrong!");
     } finally {
@@ -60,13 +63,13 @@ const SignUp = () => {
         shadow-lg w-full max-w-md p-6 md:p-8"
       >
         <h1
-          className="text-2xl md:text-3xl
+          className="text-2xl text-center md:text-3xl
           font-bold text-gray-800 mb-1"
         >
           Create Account
         </h1>
-        <p className="text-gray-500 text-sm mb-6">
-          Join SpendSmart and track your money!
+        <p className="text-gray-500 text-center text-sm mb-6">
+          Join SpendSmart And Track Your Money
         </p>
 
         {error && (
@@ -77,7 +80,15 @@ const SignUp = () => {
             {error}
           </div>
         )}
-
+        {success && (
+          <div
+            className="bg-green-50 text-green-600
+    text-sm px-4 py-2 rounded-lg mb-4
+    border border-green-200"
+          >
+            {success}
+          </div>
+        )}
         <div className="flex flex-col items-center mb-6">
           <div
             className="w-20 h-20 rounded-full
@@ -167,6 +178,7 @@ const SignUp = () => {
 
           <button
             className="w-full py-2.5
+            border border-transparent
               bg-green-600 text-white
               rounded-lg font-medium
               hover:bg-green-700
@@ -191,6 +203,7 @@ const SignUp = () => {
             rounded-lg text-gray-700
             font-medium text-sm
             hover:bg-gray-50
+             hover:border-black
             flex items-center
             justify-center gap-2 cursor-pointer"
           onClick={handleGoogleLogin}

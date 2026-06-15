@@ -8,8 +8,10 @@ const expenseRouter = require("../src/routes/expense.routes.js");
 
 app.use(
   cors({
-    credentials: true,
     origin: process.env.CORS_ORIGIN,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(
@@ -36,6 +38,17 @@ app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: `Route ${req.originalUrl} not found!`,
+  });
+});
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Something went wrong!";
+
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
   });
 });
 module.exports = app;
