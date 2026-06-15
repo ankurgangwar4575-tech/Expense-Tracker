@@ -11,7 +11,8 @@ const {
   getUserInfo,
   updateUserInfo,
   updatePassword,
-} = require("../controllers/user.controller");
+  setMonthlyLimit
+} = require("../controllers/user.controller.js");
 const upload = require("../middlewares/multer.middleware.js");
 const userModel = require("../models/user.model.js");
 const ApiResponse = require("../utils/ApiResponse.js");
@@ -55,4 +56,8 @@ userRouter.route("/get-user-info").get(verifyJWT, getUserInfo);
 userRouter.route("/update-user-info").patch(verifyJWT, updateUserInfo);
 
 userRouter.route("/update-password").patch(verifyJWT, updatePassword);
+
+userRouter.route("/set-monthly-limit").patch(verifyJWT,setMonthlyLimit);
+
+
 module.exports = userRouter;

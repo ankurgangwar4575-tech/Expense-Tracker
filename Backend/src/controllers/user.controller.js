@@ -152,7 +152,7 @@ const logoutUser = AsyncHandler(async (req, res) => {
       $set: { refreshToken: null },
     },
     {
-      new: true,
+      returnDocument: "after",
     }
   );
   const options = {
@@ -301,13 +301,39 @@ const updateUserInfo = AsyncHandler(async (req, res) => {
         },
       },
       {
-        new: true,
+        returnDocument: "after",
       }
     )
     .select("-password -refreshToken");
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User details updated successfully!!"));
+});
+
+const setMonthlyLimit = AsyncHandler(async (req, res) => {
+  const { monthlyLimit } = req.body;
+  if (monthlyLimit <= 0) {
+    throw new ApiError(
+      400,
+      "Reminder!!: MontlyLimit must be greater than zero"
+    );
+  }
+  const user = await userModel
+    .findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {
+          monthlyLimit: monthlyLimit,
+        },
+      },
+      {
+        returnDocument: "after",
+      }
+    )
+    .select("-password -refreshToken");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Month limit set successfully!"));
 });
 module.exports = {
   registerUser,
@@ -319,4 +345,5 @@ module.exports = {
   getUserInfo,
   updateUserInfo,
   updatePassword,
+  setMonthlyLimit,
 };
