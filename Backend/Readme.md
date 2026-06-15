@@ -1,1 +1,0 @@
-# This is a mini login and register based project backend focused
