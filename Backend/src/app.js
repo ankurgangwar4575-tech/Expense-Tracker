@@ -32,4 +32,10 @@ app.use("/api/users", userRouter);
 // expense routes
 app.use("/api/expenses", expenseRouter);
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found!`,
+  });
+});
 module.exports = app;
