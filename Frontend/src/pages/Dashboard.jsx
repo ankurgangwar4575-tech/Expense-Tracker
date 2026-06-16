@@ -88,22 +88,44 @@ const Dashboard = () => {
     );
   }
   return (
-    <div className="">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="">
-        {error && <div className="">{error}</div>}
+      <div
+        className="px-4 md:px-8 lg:px-16
+        py-6 flex flex-col gap-6"
+      >
+        {error && (
+          <div
+            className="bg-red-50 text-red-500
+            text-sm px-4 py-2 rounded-lg"
+          >
+            {error}
+          </div>
+        )}
 
         {summary?.isLimitExceeded && (
-          <div className="">
-            <div className="">
-              <p className="">Budget Alert!</p>
-              <p className="">{summary?.limitMessage}</p>
+          <div
+            className="bg-red-50 border
+            border-red-200 rounded-xl
+            px-4 py-3 flex items-center gap-3"
+          >
+            <div>
+              <p
+                className="text-red-600
+                font-medium text-sm"
+              >
+                Budget Alert!
+              </p>
+              <p className="text-red-400 text-xs">{summary?.limitMessage}</p>
             </div>
           </div>
         )}
 
-        <div className="">
+        <div
+          className="grid grid-cols-1
+          md:grid-cols-3 gap-4"
+        >
           <SummaryCard
             title="Balance"
             amount={summary?.balance}
@@ -123,9 +145,22 @@ const Dashboard = () => {
 
         <ExpenseChart expenses={expenses} />
 
-        <div className="">
-          <h2 className="">All Transactions</h2>
-          <button className="" onClick={() => navigate("/add-expense")}>
+        <div
+          className="flex justify-between
+          items-center"
+        >
+          <h2
+            className="text-lg font-semibold
+            text-gray-800"
+          >
+            All Transactions
+          </h2>
+          <button
+            className="px-4 py-2 bg-green-600
+              text-white text-sm rounded-lg
+              hover:bg-green-700"
+            onClick={() => navigate("/add-expense")}
+          >
             + Add New
           </button>
         </div>
