@@ -6,12 +6,12 @@ const Home = () => {
   return (
     <div
       className="min-h-screen bg-linear-to-br
-  from-white via-green-100 to-emerald-200"
+  from-white via-green-100 to-emerald-200 "
     >
       <nav
         className="flex justify-between items-center
         px-4 md:px-8 lg:px-16
-        py-4 bg-white shadow-sm"
+        py-4 bg-white "
       >
         <h1
           className="text-xl md:text-2xl

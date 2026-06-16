@@ -55,6 +55,8 @@ const SignUp = () => {
       className="min-h-screen
       bg-linear-to-br from-white
       via-green-50 to-emerald-100
+       dark:from-gray-900 dark:via-gray-900
+  dark:to-gray-800
       flex items-center justify-center
       px-4 py-8"
     >
@@ -64,7 +66,7 @@ const SignUp = () => {
       >
         <h1
           className="text-2xl text-center md:text-3xl
-          font-bold text-gray-800 mb-1"
+          font-bold text-gray-800 mb-1 "
         >
           Create Account
         </h1>
@@ -182,6 +184,7 @@ const SignUp = () => {
               bg-green-600 text-white
               rounded-lg font-medium
               hover:bg-green-700
+
               disabled:opacity-50
               disabled:cursor-not-allowed cursor-pointer"
             type="submit"

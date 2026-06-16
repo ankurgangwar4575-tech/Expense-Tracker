@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../utils/axios.js";
-
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, accessToken, logout } = useAuth();
@@ -23,7 +22,7 @@ const Navbar = () => {
       logout();
       setTimeout(() => {
         navigate("/");
-      }, 1500);
+      }, 1000);
     }
   };
 
@@ -32,6 +31,7 @@ const Navbar = () => {
       className="bg-white shadow-sm
       px-4 md:px-8 lg:px-16 py-3"
     >
+    
       {success && (
         <div
           className="fixed top-4 right-4
@@ -59,7 +59,7 @@ const Navbar = () => {
           items-center gap-6"
         >
           <span
-            className="text-gray-600 text-sm
+            className="text-gray-600 text-sm 
               cursor-pointer hover:text-green-600"
             onClick={() => navigate("/dashboard")}
           >
@@ -102,7 +102,7 @@ const Navbar = () => {
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 text-sm
-              text-red-500 border border-red-200
+              text-red-500 border cursor-pointer border-red-200
               rounded-lg hover:bg-red-50"
           >
             Sign Out

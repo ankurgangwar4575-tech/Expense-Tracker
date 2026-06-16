@@ -46,12 +46,12 @@ const SignIn = () => {
       px-4 py-8"
     >
       <div
-        className="bg-white rounded-2xl
+        className="bg-white rounded-2xl dark:bg-gray-900
         shadow-lg w-full max-w-md p-6 md:p-8"
       >
         <h1
           className="text-2xl text-center md:text-3xl
-          font-bold text-gray-800 mb-5"
+          font-bold text-gray-800 mb-5 "
         >
           Sign In To Your Account
         </h1>

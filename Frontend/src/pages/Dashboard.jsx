@@ -47,7 +47,7 @@ const Dashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axiosInstance.post(`/expenses/delete-expense/${id}`, {
+      await axiosInstance.delete(`/expenses/delete-expense/${id}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       fetchAllExpenses();
@@ -88,7 +88,7 @@ const Dashboard = () => {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 ">
       <Navbar />
 
       <div
@@ -158,10 +158,10 @@ const Dashboard = () => {
           <button
             className="px-4 py-2 bg-green-600
               text-white text-sm rounded-lg
-              hover:bg-green-700"
+              hover:bg-green-700 cursor-pointer"
             onClick={() => navigate("/add-expense")}
           >
-            + Add New
+            Add New
           </button>
         </div>
 

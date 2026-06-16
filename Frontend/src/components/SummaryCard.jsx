@@ -22,7 +22,7 @@ const SummaryCard = ({ title, amount, color }) => {
   return (
     <div
       className={`${style.card}
-      border rounded-xl p-4 md:p-6`}
+      border rounded-xl p-4 md:p-6 `}
     >
       <div className="flex items-center gap-2 mb-3">
         <p

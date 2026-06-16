@@ -75,12 +75,12 @@ const AddExpense = () => {
       >
         <div
           className="flex items-center
-          gap-3 mb-6"
+          gap-3 mb-6 text-center"
         >
           <button
             onClick={() => navigate("/dashboard")}
             className="text-gray-500
-              hover:text-green-600 text-sm"
+              hover:text-green-600 text-sm cursor-pointer"
           >
             Back
           </button>
@@ -117,11 +117,11 @@ const AddExpense = () => {
             </div>
           )}
 
-          <form className="flex flex-col gap-4" onClick={handleSubmit}>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-2">
               <button
                 type="button"
-                className={`flex-1 py-2 rounded-lg
+                className={`flex-1 py-2 rounded-lg cursor-pointer
                   text-sm font-medium transition-colors
                   ${
                     type === "expense"
@@ -134,10 +134,10 @@ const AddExpense = () => {
               </button>
               <button
                 type="button"
-                className={`flex-1 py-2 rounded-lg
-                  text-sm font-medium transition-colors
+                className={`flex-1 py-2 cursor-pointer rounded-lg
+                  text-sm font-medium  transition-colors
                   ${
-                    type === "expense"
+                    type === "income"
                       ? "bg-green-500 text-white"
                       : "bg-gray-100 text-gray-600"
                   }`}
@@ -149,7 +149,7 @@ const AddExpense = () => {
             <input
               type="text"
               placeholder="Title (e.g. Grocery Shopping)"
-              className="w-full px-4 py-2.5
+              className="w-full px-4 py-2.5 
                 border border-gray-200 rounded-lg
                 text-sm focus:outline-none
                 focus:border-green-400"
@@ -204,7 +204,7 @@ const AddExpense = () => {
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
             <button
-              className="w-full py-2.5
+              className="w-full cursor-pointer py-2.5
                 bg-green-600 text-white
                 rounded-lg font-medium
                 hover:bg-green-700
@@ -213,7 +213,7 @@ const AddExpense = () => {
               disabled={loading}
               type="submit"
             >
-              {loading ? "Adding..." : "+ Add Transaction"}
+              {loading ? "Adding..." : "Add Transaction"}
             </button>
           </form>
         </div>
