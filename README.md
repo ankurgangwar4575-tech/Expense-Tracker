@@ -5,8 +5,8 @@ built with MERN Stack that helps you
 track your income, expenses and monthly budget!
 
 ## 🔗 Live Demo
-- Frontend: [Add after deployment]
-- Backend: [Add after deployment]
+- Frontend: https://spendsmart-inky-theta.vercel.app
+- Backend: https://spend-smart-yz35.onrender.com
 
 ---
 
