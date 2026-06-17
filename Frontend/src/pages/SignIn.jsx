@@ -46,7 +46,7 @@ const SignIn = () => {
       px-4 py-8"
     >
       <div
-        className="bg-white rounded-2xl dark:bg-gray-900
+        className="bg-white rounded-2xl
         shadow-lg w-full max-w-md p-6 md:p-8"
       >
         <h1
@@ -130,7 +130,7 @@ const SignIn = () => {
           className="text-center text-sm
           text-gray-500 mt-4"
         >
-          Don't Have An Account{" "}
+          Don't Have An Account?{" "}
           <span
             className="text-green-600
               cursor-pointer hover:underline"

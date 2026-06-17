@@ -1,7 +1,390 @@
 import React from "react";
-
+import { useEffect, useState } from "react";
+import axiosInstance from "../utils/axios.js";
+import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 const Profile = () => {
-  return <div>Profile</div>;
+  const navigate = useNavigate();
+  const { user, accessToken, login } = useAuth();
+
+  const [fullName, setFullName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [monthlyLimit, setMonthlyLimit] = useState(0);
+  const [email, setEmail] = useState("");
+
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(""), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 2000);
+      return () => clearTimeout(time);
+    }
+  }, [error]);
+  useEffect(() => {
+    if (user) {
+      setFullName(user.fullName || "");
+      setUserName(user.userName || "");
+      setEmail(user.email || "");
+      setPreview(user.profilePhoto || "");
+      setMonthlyLimit(user.monthlyLimit || 0);
+    }
+  }, [user]);
+
+  const handleProfilePhotoChange = (e) => {
+    const file = e.target.files[0];
+    setProfilePhoto(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const handleUpdateProfileInfo = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const response = await axiosInstance.patch(
+        "/users/update-user-info",
+        {
+          fullName: fullName,
+          userName: userName,
+          email: email,
+        },
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      login(response.data.data, accessToken);
+      setSuccess(response.data.message);
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Error occured while updating profile!!",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleProfilePhotoUpdate = async () => {
+    if (!profilePhoto) return;
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const formData = new FormData();
+      formData.append("profilePhoto", profilePhoto);
+      const response = await axiosInstance.patch(
+        "/users/update-profile-photo",
+        formData,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      login(response.data.data, accessToken);
+      setSuccess(response.data.message);
+      setProfilePhoto(null);
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Error occurred while updating profile photo!!",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccess("");
+    setError("");
+    try {
+      const response = await axiosInstance.patch(
+        "/users/update-password",
+        {
+          oldPassword: oldPassword,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        },
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      setSuccess(response.data.message);
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Error occurred while updating password!!",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleMonthLimitSet = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      const response = await axiosInstance.patch(
+        "/users/set-monthly-limit",
+        { monthlyLimit: Number(monthlyLimit) },
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      login(response.data.data, accessToken);
+      setSuccess(response.data.message);
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Error occurred while setting monthly limit!!",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div
+        className="px-4 md:px-8 lg:px-16
+        py-6 max-w-2xl mx-auto
+        flex flex-col gap-6"
+      >
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="text-gray-500
+              hover:text-green-600 text-sm cursor-pointer"
+          >
+            Back
+          </button>
+          <h1
+            className="text-xl font-bold
+            text-gray-800"
+          >
+            My Profile
+          </h1>
+        </div>
+        {error && (
+          <div
+            className="bg-red-50 text-red-500
+            text-sm px-4 py-2 rounded-lg"
+          >
+            {error}
+          </div>
+        )}
+        {success && (
+          <div
+            className="bg-green-50 text-green-600
+            text-sm px-4 py-2 rounded-lg"
+          >
+            {success}
+          </div>
+        )}
+        <div
+          className="bg-white rounded-xl
+          shadow-sm p-6"
+        >
+          <h2
+            className="text-sm font-semibold
+            text-gray-700 mb-4"
+          >
+            Profile Photo
+          </h2>
+          <div className="flex items-center gap-4">
+            <img
+              src={preview}
+              alt="profile"
+              className="w-16 h-16 rounded-full
+                object-cover border-2
+                border-green-300"
+            />
+            <div>
+              <label
+                className="text-sm
+                text-green-600 cursor-pointer
+                hover:underline"
+              >
+                Change Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePhotoChange}
+                  className="hidden"
+                />
+              </label>
+              {profilePhoto && (
+                <button
+                  disabled={loading}
+                  onClick={handleProfilePhotoUpdate}
+                  className="block mt-2 px-3 py-1
+                    bg-green-600 text-white
+                    text-xs rounded-lg
+                    hover:bg-green-700 cursor-pointer"
+                >
+                  {loading ? "Saving..." : "Save Photo"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        <div
+          className="bg-white rounded-xl
+          shadow-sm p-6"
+        >
+          <h2
+            className="text-sm font-semibold
+            text-gray-700 mb-4"
+          >
+            Personal Information
+          </h2>
+          <form
+            onSubmit={handleUpdateProfileInfo}
+            className="flex flex-col gap-4"
+          >
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full px-4 py-2.5
+                border border-gray-200 rounded-lg
+                text-sm focus:outline-none
+                focus:border-green-400"
+            />
+            <input
+              type="text"
+              placeholder="Username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="w-full px-4 py-2.5
+                border border-gray-200 rounded-lg
+                text-sm focus:outline-none
+                focus:border-green-400"
+            />
+            <button
+              className="w-full py-2.5
+                bg-green-600 text-white
+                rounded-lg font-medium
+                hover:bg-green-700
+                disabled:opacity-50 cursor-pointer"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Update Profile"}
+            </button>
+          </form>
+        </div>
+        <div
+          className="bg-white rounded-xl
+          shadow-sm p-6"
+        >
+          <h2
+            className="text-sm font-semibold
+            text-gray-700 mb-1"
+          >
+            Monthly Budget Limit
+          </h2>
+          <p className="text-xs text-gray-400 mb-4">
+            Get warned when expenses exceed this limit!
+          </p>
+          <form onSubmit={handleMonthLimitSet} className="flex gap-3">
+            <input
+              type="text"
+              placeholder="Enter Limit (₹)"
+              value={monthlyLimit}
+              onChange={(e) => setMonthlyLimit(e.target.value)}
+              className="flex-1 px-4 py-2.5
+                border border-gray-200 rounded-lg
+                text-sm focus:outline-none
+                focus:border-green-400"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2.5
+                bg-green-600 text-white
+                rounded-lg text-sm
+                hover:bg-green-700
+                disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? "Saving..." : "Set Limit"}
+            </button>
+          </form>
+        </div>
+        {!user?.isGoogleUser && (
+          <div
+            className="bg-white rounded-xl
+            shadow-sm p-6"
+          >
+            <h2
+              className="text-sm font-semibold
+              text-gray-700 mb-4"
+            >
+              Change Password
+            </h2>
+            <form
+              onSubmit={handleUpdatePassword}
+              className="flex flex-col gap-4"
+            >
+              <input
+                type="password"
+                placeholder="Current Password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                className="w-full px-4 py-2.5
+                  border border-gray-200 rounded-lg
+                  text-sm focus:outline-none
+                  focus:border-green-400"
+              />
+              <input
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full px-4 py-2.5
+                  border border-gray-200 rounded-lg
+                  text-sm focus:outline-none
+                  focus:border-green-400"
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-2.5
+                  border border-gray-200 rounded-lg
+                  text-sm focus:outline-none
+                  focus:border-green-400"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-2.5
+                  bg-green-600 text-white
+                  rounded-lg font-medium
+                  hover:bg-green-700
+                  disabled:opacity-50 cursor-pointer"
+              >
+                {loading ? "Updating..." : "Update Password"}
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Profile;

@@ -56,9 +56,7 @@ const registerUser = AsyncHandler(async (req, res) => {
   }
   return res
     .status(201)
-    .json(
-      new ApiResponse(201, foundUser, "User registered successfully in DB!!")
-    );
+    .json(new ApiResponse(201, foundUser, "Signed Up successfully!!"));
 });
 
 const googleAuthCallback = AsyncHandler(async (req, res) => {
@@ -123,7 +121,7 @@ const loginUser = AsyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { loggedInUser, accessToken, refreshToken },
-        "Logged In successfully!!"
+        "Signed In successfully!!"
       )
     );
 });
@@ -146,7 +144,7 @@ const logoutUser = AsyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "Logged Out successfully!!"));
+    .json(new ApiResponse(200, {}, "Signed Out successfully!!"));
 });
 
 const refreshAccesToken = AsyncHandler(async (req, res) => {
@@ -232,7 +230,7 @@ const updateProfilePhoto = AsyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Profile photo updated successfully"));
+    .json(new ApiResponse(200, user, "Profile photo updated successfully!!"));
 });
 
 const getUserInfo = AsyncHandler(async (req, res) => {
@@ -263,10 +261,10 @@ const updatePassword = AsyncHandler(async (req, res) => {
     throw new ApiError(400, "Reminder!!: Invalid old password!!");
   }
   user.password = newPassword;
-  user.save({ validateBeforeSave: false });
+  await user.save({ validateBeforeSave: false });
   return res
     .status(200)
-    .json(new ApiError(200, {}, "Password updated successfully!!"));
+    .json(new ApiResponse(200, {}, "Password updated successfully!!"));
 });
 const updateUserInfo = AsyncHandler(async (req, res) => {
   const { fullName, userName, email } = req.body;

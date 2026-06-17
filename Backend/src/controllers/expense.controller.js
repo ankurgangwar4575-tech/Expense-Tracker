@@ -27,7 +27,7 @@ const addExpense = asyncHandler(async (req, res) => {
   });
   return res
     .status(201)
-    .json(new ApiResponse(201, expense, "New Expense added successfully!!"));
+    .json(new ApiResponse(201, expense, `New ${type} added successfully!!`));
 });
 
 const updateExpense = asyncHandler(async (req, res) => {

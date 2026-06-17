@@ -29,7 +29,6 @@ async function deleteFromCloudinary(cloudinaryFileUrl) {
       .join("/")
       .split(".")[0];
     await cloudinary.uploader.destroy(publicId);
-    console.log("File deleted successfully");
   } catch (error) {
     console.log("Error in deleting file: ", error);
   }

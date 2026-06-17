@@ -19,7 +19,7 @@ const ExpenseList = ({ expenses, onDelete }) => {
     >
       <h2
         className="text-lg text-center font-semibold
-        text-gray-800 "
+        text-gray-800 mb-4"
       >
         Recent Transactions
       </h2>
@@ -50,11 +50,7 @@ const ExpenseList = ({ expenses, onDelete }) => {
                 {categoryIcons[expense.category] || "📦"}
               </div>
 
-              <div
-                className="flex items-center
-    justify-between p-3
-    bg-gray-50 rounded-lg hover:bg-gray-100"
-              >
+              <div>
                 <p
                   className="text-sm font-medium
                   text-gray-800 "
