@@ -6,7 +6,9 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import AddExpense from "./pages/AddExpense";
-import GoogleSuccess from "./pages/GoogleSuccess"
+import GoogleSuccess from "./pages/GoogleSuccess";
+import UpdateExpense from "./pages/UpdateExpense";
+import AllExpenses from "./pages/AllExpenses";
 const App = () => {
   return (
     <BrowserRouter>
@@ -17,7 +19,9 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/add-expense" element={<AddExpense />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/login/success" element={<GoogleSuccess/>}></Route>
+        <Route path="/login/success" element={<GoogleSuccess />}></Route>
+        <Route path="/update-expense/:id" element={<UpdateExpense />}></Route>
+        <Route path="/all-expenses" element={<AllExpenses />}></Route>
       </Routes>
     </BrowserRouter>
   );

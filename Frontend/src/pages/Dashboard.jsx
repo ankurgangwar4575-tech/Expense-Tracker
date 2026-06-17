@@ -18,9 +18,7 @@ const Dashboard = () => {
 
   const fetchSummary = async () => {
     try {
-      const response = await axiosInstance.get("/expenses/get-summary", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const response = await axiosInstance.get("/expenses/get-summary");
       setSummary(response.data.data);
       login(response.data.data.user, accessToken);
     } catch (error) {
@@ -33,9 +31,7 @@ const Dashboard = () => {
 
   const fetchAllExpenses = async () => {
     try {
-      const response = await axiosInstance.get("/expenses/get-all-expense", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const response = await axiosInstance.get("/expenses/get-all-expense");
       setExpenses(response.data.data);
     } catch (error) {
       setError(
@@ -44,22 +40,14 @@ const Dashboard = () => {
       );
     }
   };
-
-  const handleDelete = async (id) => {
+  const fetchUserInfo = async () => {
     try {
-      await axiosInstance.delete(`/expenses/delete-expense/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      fetchAllExpenses();
-      fetchSummary();
+      const response = await axiosInstance.get("/users/get-user-info");
+      login(response.data.data, accessToken);
     } catch (error) {
-      setError(
-        error?.response?.data?.message ||
-          "Error occured while deleting expense!!",
-      );
+      console.log(error);
     }
   };
-
   useEffect(() => {
     if (!accessToken) {
       navigate("/sign-in");
@@ -67,6 +55,7 @@ const Dashboard = () => {
     }
     const fetchData = async () => {
       setLoading(true);
+      await fetchUserInfo();
       await fetchSummary();
       await fetchAllExpenses();
       setLoading(false);
@@ -88,7 +77,7 @@ const Dashboard = () => {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
       <div
@@ -98,7 +87,7 @@ const Dashboard = () => {
         {error && (
           <div
             className="bg-red-50 text-red-500
-            text-sm px-4 py-2 rounded-lg"
+            text-sm px-4 py-2 rounded-lg text-center"
           >
             {error}
           </div>
@@ -165,7 +154,19 @@ const Dashboard = () => {
           </button>
         </div>
 
-        <ExpenseList expenses={expenses} onDelete={handleDelete} />
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-800">
+            Recent Transactions
+          </h2>
+          <span
+            onClick={() => navigate("/all-expenses")}
+            className="text-sm text-green-600 cursor-pointer
+      hover:underline"
+          >
+            View All
+          </span>
+        </div>
+        <ExpenseList expenses={expenses.slice(0, 5)} />
       </div>
     </div>
   );

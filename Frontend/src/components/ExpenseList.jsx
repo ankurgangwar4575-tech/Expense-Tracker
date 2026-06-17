@@ -11,7 +11,7 @@ const categoryIcons = {
   Freelance: "💻",
   Other: "📦",
 };
-const ExpenseList = ({ expenses, onDelete }) => {
+const ExpenseList = ({ expenses, onDelete, onUpdate }) => {
   return (
     <div
       className="bg-white  rounded-xl
@@ -77,15 +77,26 @@ const ExpenseList = ({ expenses, onDelete }) => {
                 {expense.type === "income" ? "+" : "-"}₹
                 {expense.amount?.toLocaleString()}
               </p>
-
-              <button
-                onClick={() => onDelete(expense._id)}
-                className="text-gray-300
+              {onUpdate && (
+                <button
+                  className="text-gray-300
+      hover:text-green-500
+      transition-colors text-sm cursor-pointer"
+                  onClick={() => onUpdate(expense)}
+                >
+                  Update
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(expense._id)}
+                  className="text-gray-300
                   hover:text-red-500
-                  transition-colors text-lg cursor-pointer"
-              >
-                Del
-              </button>
+                  transition-colors text-sm cursor-pointer"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </div>
         ))}

@@ -5,13 +5,13 @@ const Home = () => {
   const navigate = useNavigate();
   return (
     <div
-      className="min-h-screen bg-linear-to-br
+      className="min-h-screen shadow-sm bg-linear-to-br
   from-white via-green-100 to-emerald-200 "
     >
       <nav
         className="flex justify-between items-center
         px-4 md:px-8 lg:px-16
-        py-4 bg-white "
+        py-4 bg-white shadow-sm"
       >
         <h1
           className="text-xl md:text-2xl

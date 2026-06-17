@@ -55,8 +55,6 @@ const SignUp = () => {
       className="min-h-screen
       bg-linear-to-br from-white
       via-green-50 to-emerald-100
-       dark:from-gray-900 dark:via-gray-900
-  dark:to-gray-800
       flex items-center justify-center
       px-4 py-8"
     >
@@ -76,7 +74,7 @@ const SignUp = () => {
 
         {error && (
           <div
-            className="bg-red-50 text-red-500
+            className="bg-red-50  text-center text-red-500
             text-sm px-4 py-2 rounded-lg mb-4"
           >
             {error}
@@ -84,7 +82,7 @@ const SignUp = () => {
         )}
         {success && (
           <div
-            className="bg-green-50 text-green-600
+            className="bg-green-50 text-center text-green-600
     text-sm px-4 py-2 rounded-lg mb-4
     border border-green-200"
           >

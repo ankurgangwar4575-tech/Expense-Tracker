@@ -77,7 +77,7 @@ const updateExpense = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, newExpense, "Expense updated successfully!!"));
+    .json(new ApiResponse(200, newExpense, `Expense updated successfully!!`));
 });
 
 const deleteExpense = asyncHandler(async (req, res) => {
@@ -87,10 +87,7 @@ const deleteExpense = asyncHandler(async (req, res) => {
   }
   const expense = await expenseModel.findById(id);
   if (!expense) {
-    throw new ApiError(
-      400,
-      "Reminder!! Error occurred while deleting expense!!"
-    );
+    throw new ApiError(400, "Reminder!! Error occurred while deleting!!");
   }
   if (expense.user.toString() !== req.user._id.toString()) {
     throw new ApiError(400, "Reminder!!: Unauthorized to delete this field!!");
@@ -98,7 +95,13 @@ const deleteExpense = asyncHandler(async (req, res) => {
   await expenseModel.findByIdAndDelete(id);
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Expense Deleted successfully!!"));
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        `${expense.type === "income" ? "Expense" : "Expense"} Deleted successfully!!`
+      )
+    );
 });
 
 const getExpense = asyncHandler(async (req, res) => {
@@ -108,7 +111,10 @@ const getExpense = asyncHandler(async (req, res) => {
   }
   const expense = await expenseModel.findById(id);
   if (!expense) {
-    throw new ApiError(400, "Reminder!! Unable to access the expense!!");
+    throw new ApiError(
+      400,
+      `Reminder!! Unable to access the ${expense.type === "income" ? "Income" : "Expense"}!!`
+    );
   }
   if (expense.user.toString() !== req.user._id.toString()) {
     throw new ApiError(400, "Reminder!!: Unauthorized to access this field!!");
@@ -119,7 +125,7 @@ const getExpense = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         expense,
-        "Expense information fetched successfully!!"
+        `${expense.type === "income" ? "Income" : "Expense"} information fetched successfully!!`
       )
     );
 });

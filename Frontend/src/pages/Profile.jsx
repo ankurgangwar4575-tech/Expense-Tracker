@@ -19,10 +19,14 @@ const Profile = () => {
 
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [profilePhotoLoading, setProfilePhotoLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [monthlyLimitLoading, setMonthlyLimitLoading] = useState(false);
   useEffect(() => {
     if (success) {
       const timer = setTimeout(() => setSuccess(""), 2000);
@@ -53,19 +57,15 @@ const Profile = () => {
 
   const handleUpdateProfileInfo = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setProfileLoading(true);
     setError("");
     setSuccess("");
     try {
-      const response = await axiosInstance.patch(
-        "/users/update-user-info",
-        {
-          fullName: fullName,
-          userName: userName,
-          email: email,
-        },
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
+      const response = await axiosInstance.patch("/users/update-user-info", {
+        fullName: fullName,
+        userName: userName,
+        email: email,
+      });
       login(response.data.data, accessToken);
       setSuccess(response.data.message);
     } catch (error) {
@@ -74,12 +74,12 @@ const Profile = () => {
           "Error occured while updating profile!!",
       );
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
     }
   };
   const handleProfilePhotoUpdate = async () => {
     if (!profilePhoto) return;
-    setLoading(true);
+    setProfilePhotoLoading(true);
     setError("");
     setSuccess("");
     try {
@@ -88,7 +88,6 @@ const Profile = () => {
       const response = await axiosInstance.patch(
         "/users/update-profile-photo",
         formData,
-        { headers: { Authorization: `Bearer ${accessToken}` } },
       );
       login(response.data.data, accessToken);
       setSuccess(response.data.message);
@@ -99,25 +98,21 @@ const Profile = () => {
           "Error occurred while updating profile photo!!",
       );
     } finally {
-      setLoading(false);
+      setProfilePhotoLoading(false);
     }
   };
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setPasswordLoading(true);
     setSuccess("");
     setError("");
     try {
-      const response = await axiosInstance.patch(
-        "/users/update-password",
-        {
-          oldPassword: oldPassword,
-          newPassword: newPassword,
-          confirmPassword: confirmPassword,
-        },
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
+      const response = await axiosInstance.patch("/users/update-password", {
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      });
       setSuccess(response.data.message);
       setOldPassword("");
       setNewPassword("");
@@ -128,20 +123,18 @@ const Profile = () => {
           "Error occurred while updating password!!",
       );
     } finally {
-      setLoading(false);
+      setPasswordLoading(false);
     }
   };
   const handleMonthLimitSet = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setMonthlyLimitLoading(true);
     setError("");
     setSuccess("");
     try {
-      const response = await axiosInstance.patch(
-        "/users/set-monthly-limit",
-        { monthlyLimit: Number(monthlyLimit) },
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
+      const response = await axiosInstance.patch("/users/set-monthly-limit", {
+        monthlyLimit: Number(monthlyLimit),
+      });
       login(response.data.data, accessToken);
       setSuccess(response.data.message);
     } catch (error) {
@@ -150,11 +143,14 @@ const Profile = () => {
           "Error occurred while setting monthly limit!!",
       );
     } finally {
-      setLoading(false);
+      setMonthlyLimitLoading(false);
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen bg-linear-to-br from-white
+      via-green-50 to-emerald-100"
+    >
       <Navbar />
       <div
         className="px-4 md:px-8 lg:px-16
@@ -165,13 +161,13 @@ const Profile = () => {
           <button
             onClick={() => navigate("/dashboard")}
             className="text-gray-500
-              hover:text-green-600 text-sm cursor-pointer"
+              hover:text-green-600  text-sm cursor-pointer"
           >
             Back
           </button>
           <h1
             className="text-xl font-bold
-            text-gray-800"
+            text-gray-800 "
           >
             My Profile
           </h1>
@@ -179,7 +175,7 @@ const Profile = () => {
         {error && (
           <div
             className="bg-red-50 text-red-500
-            text-sm px-4 py-2 rounded-lg"
+            text-sm px-4 py-2 rounded-lg text-center"
           >
             {error}
           </div>
@@ -187,7 +183,7 @@ const Profile = () => {
         {success && (
           <div
             className="bg-green-50 text-green-600
-            text-sm px-4 py-2 rounded-lg"
+            text-sm px-4 py-2 rounded-lg text-center"
           >
             {success}
           </div>
@@ -226,14 +222,14 @@ const Profile = () => {
               </label>
               {profilePhoto && (
                 <button
-                  disabled={loading}
+                  disabled={profilePhotoLoading}
                   onClick={handleProfilePhotoUpdate}
                   className="block mt-2 px-3 py-1
                     bg-green-600 text-white
                     text-xs rounded-lg
                     hover:bg-green-700 cursor-pointer"
                 >
-                  {loading ? "Saving..." : "Save Photo"}
+                  {profilePhotoLoading ? "Saving..." : "Save Photo"}
                 </button>
               )}
             </div>
@@ -280,9 +276,9 @@ const Profile = () => {
                 hover:bg-green-700
                 disabled:opacity-50 cursor-pointer"
               type="submit"
-              disabled={loading}
+              disabled={profileLoading}
             >
-              {loading ? "Saving..." : "Update Profile"}
+              {profileLoading ? "Saving..." : "Update Profile"}
             </button>
           </form>
         </div>
@@ -312,14 +308,14 @@ const Profile = () => {
             />
             <button
               type="submit"
-              disabled={loading}
+              disabled={monthlyLimitLoading}
               className="px-4 py-2.5
                 bg-green-600 text-white
                 rounded-lg text-sm
                 hover:bg-green-700
                 disabled:opacity-50 cursor-pointer"
             >
-              {loading ? "Saving..." : "Set Limit"}
+              {monthlyLimitLoading ? "Saving..." : "Set Limit"}
             </button>
           </form>
         </div>
@@ -370,14 +366,14 @@ const Profile = () => {
               />
               <button
                 type="submit"
-                disabled={loading}
+                disabled={passwordLoading}
                 className="w-full py-2.5
                   bg-green-600 text-white
                   rounded-lg font-medium
                   hover:bg-green-700
                   disabled:opacity-50 cursor-pointer"
               >
-                {loading ? "Updating..." : "Update Password"}
+                {passwordLoading ? "Updating..." : "Update Password"}
               </button>
             </form>
           </div>

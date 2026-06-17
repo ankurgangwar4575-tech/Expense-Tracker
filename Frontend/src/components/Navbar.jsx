@@ -10,11 +10,7 @@ const Navbar = () => {
   const [success, setSuccess] = useState("");
   const handleLogout = async () => {
     try {
-      const response = await axiosInstance.get("/users/sign-out", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await axiosInstance.get("/users/sign-out");
       setSuccess(response.data.message);
     } catch (error) {
       console.log(error);
@@ -28,13 +24,12 @@ const Navbar = () => {
 
   return (
     <nav
-      className="bg-white shadow-sm
+      className="bg-white  shadow-sm
       px-4 md:px-8 lg:px-16 py-3"
     >
-    
       {success && (
         <div
-          className="fixed top-4 right-4
+          className="fixed top-4 text-center right-4
     bg-green-50 text-green-600
     text-sm px-4 py-2 rounded-lg
     border border-green-200 z-50"

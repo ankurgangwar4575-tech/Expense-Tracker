@@ -1,4 +1,4 @@
-# 💰 SpendSmart - Expense Tracker
+# SpendSmart - Expense Tracker
 
 A full stack expense tracking application
 built with MERN Stack that helps you
@@ -10,7 +10,7 @@ track your income, expenses and monthly budget!
 
 ---
 
-## ✨ Features
+## Features
 
 -  JWT Authentication (Access + Refresh Token)
 -  Google OAuth (Continue with Google)

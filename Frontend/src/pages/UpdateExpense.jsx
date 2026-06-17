@@ -1,9 +1,9 @@
-import React from "react";
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../utils/axios.js";
+import React from "react";
+import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
 const categories = [
   "Food",
   "Transport",
@@ -16,18 +16,45 @@ const categories = [
   "Freelance",
   "Other",
 ];
-const AddExpense = () => {
+const UpdateExpense = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { accessToken } = useAuth();
+
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
-  const [error, setError] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
-  const { accessToken } = useAuth();
+  const [error, setError] = useState("");
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    const fetchExpense = async () => {
+      try {
+        const response = await axiosInstance.get(`/expenses/get-expense/${id}`);
+        const data = response.data.data;
+        setTitle(data.title);
+        setType(data.type);
+        setCategory(data.category);
+        setAmount(data.amount);
+        setDate(data.date?.split("T")[0]);
+        setDescription(data.description || "");
+      } catch (error) {
+        setError(
+          error?.response?.data?.message ||
+            "Error occured while fetching expense",
+        );
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchExpense();
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,86 +62,62 @@ const AddExpense = () => {
     setError("");
     setSuccess("");
     try {
-      const data = {
-        title: title,
-        amount: Number(amount),
-        type: type,
-        category: category,
-        date: date,
-        description: description,
-      };
-      const response = await axiosInstance.post("/expenses/add-expense", data);
+      const response = await axiosInstance.patch(
+        `/expenses/update-expense/${id}`,
+        {
+          title: title,
+          amount: Number(amount),
+          type: type,
+          category: category,
+          date: date,
+          description: description,
+        },
+      );
       setSuccess(response.data.message);
-      setTitle("");
-      setAmount("");
-      setCategory("");
-      setType("expense");
-      setDate("");
-      setDescription("");
-
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+      setTimeout(() => navigate("/dashboard"), 1500);
     } catch (error) {
       setError(
-        error?.response?.data?.message ||
-          "Error occurred while adding Expense!!",
+        error.response?.data?.message ||
+          "Error occured while updating expense!",
       );
     } finally {
       setLoading(false);
     }
   };
+  if (fetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400">Loading Expense..</p>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div
-        className="px-4 md:px-8 lg:px-16
-        py-6 max-w-2xl mx-auto"
-      >
-        <div
-          className="flex items-center
-          gap-3 mb-6 text-center"
-        >
+      <div className="px-4 md:px-8 lg:px-16 py-6 max-w-2xl mx-auto">
+        <div className="flex items-center gap-3 mb-6">
           <button
             onClick={() => navigate("/dashboard")}
-            className="text-gray-500
-              hover:text-green-600 text-sm cursor-pointer"
+            className="text-gray-500 hover:text-green-600 text-sm"
           >
             Back
           </button>
-          <h1
-            className="text-xl font-bold
-            text-gray-800"
-          >
-            Add A New Transaction
+          <h1 className="text-xl font-bold text-gray-800">
+            Update Transaction
           </h1>
         </div>
 
-        <div
-          className="bg-white rounded-xl
-          shadow-sm p-6"
-        >
+        <div className="bg-white rounded-xl shadow-sm p-6">
           {error && (
-            <div
-              className="bg-red-50
-              text-red-500 text-sm
-              px-4 py-2 rounded-lg mb-4 text-center"
-            >
+            <div className="bg-red-50 text-center text-red-500 text-sm px-4 py-2 rounded-lg mb-4">
               {error}
             </div>
           )}
-
           {success && (
-            <div
-              className="bg-green-50
-              text-green-600 text-sm
-              px-4 py-2 rounded-lg mb-4
-              border border-green-200 text-center"
-            >
+            <div className="bg-green-50 text-center text-green-600 text-sm px-4 py-2 rounded-lg mb-4 border border-green-200">
               {success}
             </div>
           )}
-
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex gap-2">
               <button
@@ -211,7 +214,7 @@ const AddExpense = () => {
               disabled={loading}
               type="submit"
             >
-              {loading ? "Adding..." : "Add Transaction"}
+              {loading ? "Updating..." : "Update Transaction"}
             </button>
           </form>
         </div>
@@ -220,4 +223,4 @@ const AddExpense = () => {
   );
 };
 
-export default AddExpense;
+export default UpdateExpense;
