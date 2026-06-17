@@ -48,7 +48,7 @@ const SignUp = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/api/users/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/users/auth/google`;
   };
   return (
     <div

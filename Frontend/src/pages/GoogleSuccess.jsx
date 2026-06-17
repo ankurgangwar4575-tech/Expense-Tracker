@@ -7,8 +7,11 @@ const GoogleSuccess = () => {
   const { login } = useAuth();
 
   useEffect(() => {
+    console.log("Current URL:", window.location.href);
+
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    console.log("Token:", token);
     if (token) {
       login(null, token);
       navigate("/dashboard");

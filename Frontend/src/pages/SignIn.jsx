@@ -13,7 +13,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/api/users/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/users/auth/google`;
   };
   const handleFormSubmit = async (e) => {
     e.preventDefault();
