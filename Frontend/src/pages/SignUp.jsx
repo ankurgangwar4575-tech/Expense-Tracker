@@ -211,7 +211,9 @@ const SignUp = () => {
         >
           Continue with Google
         </button>
-
+        <p className="text-xs text-gray-400 text-center mt-1">
+          First login may take a few seconds to wake up the server
+        </p>
         <p
           className="text-center text-sm
           text-gray-500 mt-4"
