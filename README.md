@@ -54,9 +54,4 @@ track your income, expenses and monthly budget!
 - GitHub → [https://github.com/ankurgangwar4575-tech]
 
 ---
-
-## ⭐ Support
-
-If you like this project
-please give it a ⭐ on GitHub!
-It motivates me to build more! 
+ 
